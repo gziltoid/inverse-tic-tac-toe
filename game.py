@@ -2,12 +2,12 @@
 from collections import namedtuple
 from enum import Enum
 
-
+# FIXME: move to class ?
 PLAYER_MARKS = ('X', 'O')
 WIDTH, HEIGHT = 10, 10
-LOSING_LENGTH = 3
+LOSING_LENGTH = 5
 
-Coords = namedtuple('Coords', 'x y')
+CellCoords = namedtuple('CellCoords', 'row col')
 
 
 class GameState(Enum):
@@ -24,15 +24,17 @@ class InverseTicTacToeBoard:
         self.game_state = GameState.IN_PROGRESS
 
     def __is_cell_empty(self, cell):
-        return self.board[cell.x][cell.y] is None
+        return self.board[cell.row][cell.] is None
 
     def __are_there_empty_cells(self):
         return any(None in row for row in self.board)
 
     def try_place_marker(self, marker, pos):
+        if not (0 <= pos.row < WIDTH) or not (0 <= pos.col < HEIGHT):
+            return False
         if not self.__is_cell_empty(pos):
             return False
-        self.board[pos.x][pos.y] = marker
+        self.board[pos.row][pos.col] = marker
         if self.check_if_player_will_lose(marker, pos):
             self.game_state = GameState.X_WON if marker == 'O' else GameState.O_WON
         elif not self.__are_there_empty_cells():
@@ -42,84 +44,99 @@ class InverseTicTacToeBoard:
     def check_if_player_will_lose(self, marker, pos):
         count = 1
         # check left
-        for cell in self.board[pos.x][pos.y - 1::-1]:
-            if cell == marker:
-                count += 1
-            else:
-                break
+        row, col = pos.row, pos.col
+        if col > 0:
+            for cell in self.board[row][col - 1::-1]:
+                if cell == marker:
+                    count += 1
+                    if count == LOSING_LENGTH:
+                        return True
+                else:
+                    break
         # check right
-        for cell in self.board[pos.x][pos.y + 1:]:
-            if cell == marker:
-                count += 1
-            else:
-                break
+        row, col = pos.row, pos.col
+        if col < WIDTH - 1:
+            for cell in self.board[row][col + 1:]:
+                if cell == marker:
+                    count += 1
+                    if count == LOSING_LENGTH:
+                        return True
+                else:
+                    break
 
-        if count == LOSING_LENGTH:
-            return True
-        else:
-            count = 1
-
+        count = 1
         # check above
-        for row in self.board[pos.x - 1::-1]:
-            if row[pos.y] == marker:
-                count += 1
-            else:
-                break
+        row, col = pos.row, pos.col
+        if row > 0:
+            for arr in self.board[row - 1::-1]:
+                if arr[col] == marker:
+                    count += 1
+                    if count == LOSING_LENGTH:
+                        return True
+                else:
+                    break
         # check below
-        for row in self.board[pos.x + 1:]:
-            if row[pos.y] == marker:
-                count += 1
-            else:
-                break
+        row, col = pos.row, pos.col
+        if row < HEIGHT - 1:
+            for arr in self.board[row + 1:]:
+                if arr[col] == marker:
+                    count += 1
+                    if count == LOSING_LENGTH:
+                        return True
+                else:
+                    break
 
-        if count == LOSING_LENGTH:
-            return True
-        else:
-            count = 1
-
-        # check left diagonal upward
-        col = pos.y
-        for row in self.board[pos.x - 1::-1]:
+        count = 1
+        # check main diagonal upward
+        row, col = pos.row, pos.col
+        while True:
+            row -= 1
             col -= 1
-            if row[col] == marker:
-                count += 1
-            else:
+            if row < 0 or col < 0:
                 break
-        # check left diagonal downward
-        col = pos.y
-        for row in self.board[pos.x + 1:]:
+            if self.board[row][col] != marker:
+                break
+            count += 1
+            if count == LOSING_LENGTH:
+                return True
+        # check main diagonal downward
+        row, col = pos.row, pos.col
+        while True:
+            row += 1
             col += 1
-            if row[col] == marker:
-                count += 1
-            else:
+            if row > HEIGHT - 1 or col > WIDTH - 1:
                 break
+            if self.board[row][col] != marker:
+                break
+            count += 1
+            if count == LOSING_LENGTH:
+                return True
 
-        if count == LOSING_LENGTH:
-            return True
-        else:
-            count = 1
-
-        # check right diagonal upward
-        col = pos.y
-        for row in self.board[pos.x - 1::-1]:
+        count = 1
+        # check antidiagonal upward
+        row, col = pos.row, pos.col
+        while True:
+            row -= 1
             col += 1
-            if row[col] == marker:
-                count += 1
-            else:
+            if row < 0 or col > WIDTH - 1:
                 break
-        # check right diagonal downward
-        col = pos.y
-        for row in self.board[pos.x + 1:]:
+            if self.board[row][col] != marker:
+                break
+            count += 1
+            if count == LOSING_LENGTH:
+                return True
+        # check antidiagonal downward
+        row, col = pos.row, pos.col
+        while True:
+            row += 1
             col -= 1
-            if row[col] == marker:
-                count += 1
-            else:
+            if row > HEIGHT - 1 or col < 0:
                 break
-
-        if count == LOSING_LENGTH:
-            return True
-        else:
-            count = 1
+            if self.board[row][col] != marker:
+                break
+            count += 1
+            if count == LOSING_LENGTH:
+                return True
 
         return False
 
