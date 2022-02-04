@@ -3,9 +3,9 @@ from collections import namedtuple
 from enum import Enum
 
 
-PLAYER_MARKS = ['X', 'O']
+PLAYER_MARKS = ('X', 'O')
 WIDTH, HEIGHT = 10, 10
-LOOSING_LENGTH = 5
+LOSING_LENGTH = 3
 
 Coords = namedtuple('Coords', 'x y')
 
@@ -19,8 +19,8 @@ class GameState(Enum):
 
 class InverseTicTacToeBoard:
 
-    def __init__(self):
-        self.board = [[None] * WIDTH for _ in range(HEIGHT)]
+    def __init__(self, width, height):
+        self.board = [[None] * width for _ in range(height)]
         self.game_state = GameState.IN_PROGRESS
 
     def __is_cell_empty(self, cell):
@@ -54,56 +54,69 @@ class InverseTicTacToeBoard:
             else:
                 break
 
-        if count == LOOSING_LENGTH:
+        if count == LOSING_LENGTH:
             return True
         else:
             count = 1
 
         # check above
-        for cell in self.board[pos.x - 1::-1][pos.y]:
-            if cell == marker:
+        for row in self.board[pos.x - 1::-1]:
+            if row[pos.y] == marker:
                 count += 1
             else:
                 break
         # check below
-        for cell in self.board[pos.x + 1:][pos.y]:
-            if cell == marker:
+        for row in self.board[pos.x + 1:]:
+            if row[pos.y] == marker:
                 count += 1
             else:
                 break
 
-        if count == LOOSING_LENGTH:
+        if count == LOSING_LENGTH:
             return True
         else:
             count = 1
 
         # check left diagonal upward
-        for cell in self.board[pos.x - 1::-1][pos.y - 1::-1]:
-            if cell == marker:
+        col = pos.y
+        for row in self.board[pos.x - 1::-1]:
+            col -= 1
+            if row[col] == marker:
                 count += 1
             else:
                 break
         # check left diagonal downward
-        for cell in self.board[pos.x + 1:][pos.y + 1:]:
-            if cell == marker:
+        col = pos.y
+        for row in self.board[pos.x + 1:]:
+            col += 1
+            if row[col] == marker:
                 count += 1
             else:
                 break
 
+        if count == LOSING_LENGTH:
+            return True
+        else:
+            count = 1
+
         # check right diagonal upward
-        for cell in self.board[pos.x - 1::-1][pos.y + 1:]:
-            if cell == marker:
+        col = pos.y
+        for row in self.board[pos.x - 1::-1]:
+            col += 1
+            if row[col] == marker:
                 count += 1
             else:
                 break
         # check right diagonal downward
-        for cell in self.board[pos.x + 1:][pos.y - 1::-1]:
-            if cell == marker:
+        col = pos.y
+        for row in self.board[pos.x + 1:]:
+            col -= 1
+            if row[col] == marker:
                 count += 1
             else:
                 break
 
-        if count == LOOSING_LENGTH:
+        if count == LOSING_LENGTH:
             return True
         else:
             count = 1
@@ -115,4 +128,4 @@ class InverseTicTacToeBoard:
 
 
 if __name__ == '__main__':
-    game = InverseTicTacToeBoard()
+    game = InverseTicTacToeBoard(WIDTH, HEIGHT)
