@@ -60,48 +60,52 @@ class InverseTicTacToeBoard(object):
 
     def check_if_player_will_lose(self, marker, pos):
         count = 1
-        # check left
+        # check on the left
         row, col = pos.row, pos.col
-        if col > 0:
-            for cell in self.__board[row][col - 1::-1]:
-                if cell == marker:
-                    count += 1
-                    if count == self.__losing_length:
-                        return True
-                else:
-                    break
-        # check right
+        while True:
+            col -= 1
+            if col < 0:
+                break
+            if self.__board[row][col] != marker:
+                break
+            count += 1
+            if count == self.__losing_length:
+                return True
+        # check on the right
         row, col = pos.row, pos.col
-        if col < self.__width - 1:
-            for cell in self.__board[row][col + 1:]:
-                if cell == marker:
-                    count += 1
-                    if count == self.__losing_length:
-                        return True
-                else:
-                    break
+        while True:
+            col += 1
+            if col > self.__width - 1:
+                break
+            if self.__board[row][col] != marker:
+                break
+            count += 1
+            if count == self.__losing_length:
+                return True
 
         count = 1
         # check above
         row, col = pos.row, pos.col
-        if row > 0:
-            for arr in self.__board[row - 1::-1]:
-                if arr[col] == marker:
-                    count += 1
-                    if count == self.__losing_length:
-                        return True
-                else:
-                    break
+        while True:
+            row -= 1
+            if row < 0:
+                break
+            if self.__board[row][col] != marker:
+                break
+            count += 1
+            if count == self.__losing_length:
+                return True
         # check below
         row, col = pos.row, pos.col
-        if row < self.__height - 1:
-            for arr in self.__board[row + 1:]:
-                if arr[col] == marker:
-                    count += 1
-                    if count == self.__losing_length:
-                        return True
-                else:
-                    break
+        while True:
+            row += 1
+            if row > self.__height - 1:
+                break
+            if self.__board[row][col] != marker:
+                break
+            count += 1
+            if count == self.__losing_length:
+                return True
 
         count = 1
         # check main diagonal upward
