@@ -1,5 +1,4 @@
 from game import InverseTicTacToeBoard, PlayerMark, CellCoords, GameState
-from pprint import pprint
 import pytest
 
 
@@ -17,7 +16,7 @@ def test_placing_markers(game):
     assert game._InverseTicTacToeBoard__board[1][1] is PlayerMark.X
     assert game._InverseTicTacToeBoard__board[2][2] is PlayerMark.O
     assert game.get_result() is GameState.IN_PROGRESS
-    # can't place a marker when cell is not empty
+    # check if player can't place a marker when cell is not empty
     assert game.try_place_marker(x, CellCoords(1, 1)) is False
     assert game.try_place_marker(o, CellCoords(2, 2)) is False
     # bounds check
@@ -29,7 +28,6 @@ def test_placing_markers(game):
     assert game.try_place_marker(x, CellCoords(9, 0)) is True
     assert game.try_place_marker(x, CellCoords(10, 10)) is False
     assert game.try_place_marker(x, CellCoords(9, 9)) is True
-    # pprint(game.board)
 
 
 def test_check_horizontal_losing(game):
@@ -74,7 +72,6 @@ def test_check_antidiagonal_losing(game):
 
 def test_check_tie(game):
     x, o = PlayerMark.X, PlayerMark.O
-
     for row in range(game.width):
         for col in range(game.height):
             if row % 2 == 0:
