@@ -1,5 +1,4 @@
-from pprint import pprint
-from game import InverseTicTacToeBoard, PlayerMark, CellCoords, GameState
+from game import Bot, InverseTicTacToeBoard, PlayerMark, CellCoords, GameState
 import pytest
 
 
@@ -81,4 +80,13 @@ def test_check_tie(board):
             else:
                 board.try_place_marker(o if col % 4 in (
                     0, 1) else x, CellCoords(row, col))
+    assert board.get_result() is GameState.TIE
+
+
+def test_tie_when_two_bots_playing(board):
+    bot1 = Bot(board, marker=PlayerMark.X)
+    bot2 = Bot(board, marker=PlayerMark.O)
+    for _ in range(50):
+        bot1.make_a_move()
+        bot2.make_a_move()
     assert board.get_result() is GameState.TIE

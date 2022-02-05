@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 from collections import namedtuple
 from enum import Enum
-from pprint import pprint
 
 
 class PlayerMark(Enum):
@@ -47,10 +46,16 @@ class InverseTicTacToeBoard:
         return any(None in row for row in self.__board)
 
     def try_place_marker(self, marker, pos):
+        # game is already finished
+        if self.__game_state is not GameState.IN_PROGRESS:
+            return False
+        # trying to place marker out of bounds
         if not (0 <= pos.row < self.__width) or not (0 <= pos.col < self.__height):
             return False
+        # cell is not empty
         if not self.is_cell_empty(pos):
             return False
+
         self.__board[pos.row][pos.col] = marker
         if self.check_if_player_will_lose(marker, pos):
             self.__game_state = (
