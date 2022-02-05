@@ -1,4 +1,4 @@
-from game import InverseTicTacToeBoard, PLAYER_MARKS, CellCoords, GameState
+from game import InverseTicTacToeBoard, PLAYER_MARKS, CellCoords, GameState, WIDTH, HEIGHT
 from pprint import pprint
 import pytest
 
@@ -70,3 +70,16 @@ def test_check_antidiagonal_losing(game):
     game.try_place_marker(o, CellCoords(6, 3))
     game.try_place_marker(o, CellCoords(7, 2))
     assert game.get_result() is GameState.X_WON
+
+
+def test_check_tie(game):
+    x, o = PLAYER_MARKS[0], PLAYER_MARKS[1]
+
+    for row in range(WIDTH):
+        for col in range(HEIGHT):
+            if row % 2 == 0:
+                game.try_place_marker(x if col % 4 in (0, 1) else o, CellCoords(row, col))
+            else:
+                game.try_place_marker(o if col % 4 in (0, 1) else x, CellCoords(row, col))
+    pprint(game.board)
+    assert game.get_result() is GameState.TIE

@@ -24,7 +24,7 @@ class InverseTicTacToeBoard:
         self.game_state = GameState.IN_PROGRESS
 
     def __is_cell_empty(self, cell):
-        return self.board[cell.row][cell.] is None
+        return self.board[cell.row][cell.col] is None
 
     def __are_there_empty_cells(self):
         return any(None in row for row in self.board)
