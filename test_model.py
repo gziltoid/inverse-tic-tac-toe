@@ -1,11 +1,11 @@
-from game import InverseTicTacToeBoard, PLAYER_MARKS, CellCoords, GameState, WIDTH, HEIGHT
+from game import InverseTicTacToeBoard, PLAYER_MARKS, CellCoords, GameState
 from pprint import pprint
 import pytest
 
 
 @pytest.fixture(autouse=True)
 def game():
-    game = InverseTicTacToeBoard(width=10, height=10)
+    game = InverseTicTacToeBoard(width=10, height=10, losing_length=5)
     yield game
 
 
@@ -14,8 +14,8 @@ def test_placing_markers(game):
     o = PLAYER_MARKS[1]
     game.try_place_marker(x, CellCoords(1, 1))
     game.try_place_marker(o, CellCoords(2, 2))
-    assert game.board[1][1] == 'X'
-    assert game.board[2][2] == 'O'
+    assert game._InverseTicTacToeBoard__board[1][1] == 'X'
+    assert game._InverseTicTacToeBoard__board[2][2] == 'O'
     assert game.get_result() is GameState.IN_PROGRESS
     # can't place a marker when cell is not empty
     assert game.try_place_marker(x, CellCoords(1, 1)) is False
@@ -75,11 +75,10 @@ def test_check_antidiagonal_losing(game):
 def test_check_tie(game):
     x, o = PLAYER_MARKS[0], PLAYER_MARKS[1]
 
-    for row in range(WIDTH):
-        for col in range(HEIGHT):
+    for row in range(game.width):
+        for col in range(game.height):
             if row % 2 == 0:
                 game.try_place_marker(x if col % 4 in (0, 1) else o, CellCoords(row, col))
             else:
                 game.try_place_marker(o if col % 4 in (0, 1) else x, CellCoords(row, col))
-    pprint(game.board)
     assert game.get_result() is GameState.TIE
