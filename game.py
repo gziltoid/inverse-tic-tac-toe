@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from collections import namedtuple
 from enum import Enum
+from pprint import pprint
 
 
 class PlayerMark(Enum):
@@ -18,7 +19,7 @@ class GameState(Enum):
     TIE = 4
 
 
-class InverseTicTacToeBoard(object):
+class InverseTicTacToeBoard:
     def __init__(self, width, height, losing_length):
         # FIXME check boundaries
         self.__width = width
@@ -39,7 +40,7 @@ class InverseTicTacToeBoard(object):
     def losing_length(self):
         return self.__losing_length
 
-    def __is_cell_empty(self, cell):
+    def is_cell_empty(self, cell):
         return self.__board[cell.row][cell.col] is None
 
     def __are_there_empty_cells(self):
@@ -48,7 +49,7 @@ class InverseTicTacToeBoard(object):
     def try_place_marker(self, marker, pos):
         if not (0 <= pos.row < self.__width) or not (0 <= pos.col < self.__height):
             return False
-        if not self.__is_cell_empty(pos):
+        if not self.is_cell_empty(pos):
             return False
         self.__board[pos.row][pos.col] = marker
         if self.check_if_player_will_lose(marker, pos):
@@ -99,5 +100,27 @@ class InverseTicTacToeBoard(object):
         return self.__game_state
 
 
+class Bot:
+    def __init__(self, board, marker):
+        self.__board = board
+        self.marker = marker
+
+    def make_a_move(self):
+        for row in range(self.__board.width):
+            for col in range(self.__board.height):
+                cell = CellCoords(row, col)
+                if self.__board.is_cell_empty(cell) and not self.__board.check_if_player_will_lose(self.marker, cell):
+                    self.__board.try_place_marker(self.marker, cell)
+                    return True
+        # empty cells are left but player will lose
+        for row in range(self.__board.width):
+            for col in range(self.__board.height):
+                cell = CellCoords(row, col)
+                if self.__board.is_cell_empty(cell):
+                    self.__board.try_place_marker(self.marker, cell)
+        return False
+
+
 if __name__ == "__main__":
-    game = InverseTicTacToeBoard(width=10, height=10, losing_length=5)
+    board = InverseTicTacToeBoard(width=5, height=5, losing_length=3)
+    bot = Bot(board, marker=PlayerMark.O)
