@@ -50,14 +50,14 @@ class InverseTicTacToeBoard:
         if self.__game_state is not GameState.IN_PROGRESS:
             return False
         # trying to place marker out of bounds
-        if not (0 <= pos.row < self.__width) or not (0 <= pos.col < self.__height):
+        if not (0 <= pos.col < self.__width) or not (0 <= pos.row < self.__height):
             return False
         # cell is not empty
         if not self.is_cell_empty(pos):
             return False
 
         self.__board[pos.row][pos.col] = marker
-        if self.check_if_player_will_lose(marker, pos):
+        if self.will_lose(marker, pos):
             self.__game_state = (
                 GameState.X_WON if marker == PlayerMark.O else GameState.O_WON
             )
@@ -85,9 +85,9 @@ class InverseTicTacToeBoard:
         count += self.__count_markers(marker, pos, delta=(dx, dy))
         # check forward
         count += self.__count_markers(marker, pos, delta=(-dx, -dy))
-        return count == self.__losing_length
+        return count >= self.__losing_length
 
-    def check_if_player_will_lose(self, marker, pos):
+    def will_lose(self, marker, pos):
         return any(
             (
                 # check horizontally
@@ -111,15 +111,15 @@ class Bot:
         self.marker = marker
 
     def make_a_move(self):
-        for row in range(self.__board.width):
-            for col in range(self.__board.height):
+        for row in range(self.__board.height):
+            for col in range(self.__board.width):
                 cell = CellCoords(row, col)
-                if self.__board.is_cell_empty(cell) and not self.__board.check_if_player_will_lose(self.marker, cell):
+                if self.__board.is_cell_empty(cell) and not self.__board.will_lose(self.marker, cell):
                     self.__board.try_place_marker(self.marker, cell)
                     return True
         # empty cells are left but player will lose
-        for row in range(self.__board.width):
-            for col in range(self.__board.height):
+        for row in range(self.__board.height):
+            for col in range(self.__board.width):
                 cell = CellCoords(row, col)
                 if self.__board.is_cell_empty(cell):
                     self.__board.try_place_marker(self.marker, cell)

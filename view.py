@@ -1,6 +1,6 @@
 import sys
 import pygame
-from game import PlayerMark
+from game import PlayerMark, InverseTicTacToeBoard, Bot, CellCoords, GameState
 # initialize pygame
 pygame.init()
 
@@ -8,6 +8,7 @@ pygame.init()
 CELL_SIZE = 50
 MARGIN = 1
 ROW_COUNT, COL_COUNT = 10, 10
+LOSING_LENGTH = 5
 SCREEN_WIDTH = CELL_SIZE * COL_COUNT + MARGIN * (COL_COUNT + 1)
 SCREEN_HEIGHT = CELL_SIZE * ROW_COUNT + MARGIN * (ROW_COUNT + 1)
 FONT_NAME = 'arial'
@@ -16,6 +17,7 @@ FONT_NAME = 'arial'
 CELL_COLOR = (240, 240, 240)
 O_COLOR = (0, 150, 0)
 X_COLOR = (0, 0, 255)
+BG_COLOR = (100, 100, 100)
 GAME_OVER_BG_COLOR = (0, 0, 0)
 
 
@@ -24,10 +26,10 @@ pygame.display.set_caption("Inverse Tic-Tac-Toe")
 img = pygame.image.load("tic-tac-toe.png")
 pygame.display.set_icon(img)
 
-
-cells = [[0] * COL_COUNT for _ in range(ROW_COUNT)]
-move_count = 0
 game_over = False
+board = InverseTicTacToeBoard(
+    width=COL_COUNT, height=ROW_COUNT, losing_length=LOSING_LENGTH)
+bot = Bot(board, marker=PlayerMark.O)
 
 while True:
     for event in pygame.event.get():
@@ -38,25 +40,25 @@ while True:
             x_mouse, y_mouse = pygame.mouse.get_pos()
             col = x_mouse // (MARGIN + CELL_SIZE)
             row = y_mouse // (MARGIN + CELL_SIZE)
-            if cells[row][col] == 0:
-                if move_count % 2 == 0:
-                    cells[row][col] = PlayerMark.X
-                else:
-                    cells[row][col] = PlayerMark.O
-                move_count += 1
+            cell = CellCoords(row, col)
+            if board.try_place_marker(PlayerMark.X, cell):
+                bot.make_a_move()
         elif game_over and event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
             game_over = False
-            cells = [[0] * COL_COUNT for _ in range(ROW_COUNT)]
-            move_count = 0
+            board = InverseTicTacToeBoard(
+                width=COL_COUNT, height=ROW_COUNT, losing_length=LOSING_LENGTH)
+            bot = Bot(board, marker=PlayerMark.O)
 
     if not game_over:
+        screen.fill(BG_COLOR)
         for row in range(ROW_COUNT):
             for col in range(COL_COUNT):
                 x = col * CELL_SIZE + (col + 1) * MARGIN
                 y = row * CELL_SIZE + (row + 1) * MARGIN
                 pygame.draw.rect(screen, CELL_COLOR,
                                  (x, y, CELL_SIZE, CELL_SIZE))
-                if cells[row][col] == PlayerMark.X:
+                # FIXME board.current_player ??
+                if board._InverseTicTacToeBoard__board[row][col] == PlayerMark.X:
                     pygame.draw.line(
                         screen,
                         X_COLOR,
@@ -71,7 +73,7 @@ while True:
                         (x + 5, y + CELL_SIZE - 5),
                         width=5,
                     )
-                elif cells[row][col] == PlayerMark.O:
+                elif board._InverseTicTacToeBoard__board[row][col] == PlayerMark.O:
                     pygame.draw.circle(
                         screen,
                         O_COLOR,
@@ -80,13 +82,22 @@ while True:
                         width=3,
                     )
 
+    if board.get_result() is not GameState.IN_PROGRESS:
+        game_over = True
+
     if game_over:
-        screen.fill(GAME_OVER_BG_COLOR)
-        font = pygame.font.SysFont(FONT_NAME, 80)
-        text = font.render('X', True, (255, 0, 0))
+        font = pygame.font.SysFont(FONT_NAME, 50)
+        if board.get_result() is GameState.X_WON:
+            msg = 'X'
+        elif board.get_result() is GameState.O_WON:
+            msg = 'O'
+        else:
+            msg = 'TIE'
+        text = font.render(f'{msg} has won!', True, (226, 20, 27))
         text_rect = text.get_rect()
         text_x = screen.get_width() / 2 - text_rect.width / 2
         text_y = screen.get_height() / 2 - text_rect.height / 2
         screen.blit(text, (text_x, text_y))
+        pygame.display.update()
 
     pygame.display.update()
