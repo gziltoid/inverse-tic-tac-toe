@@ -127,5 +127,5 @@ class Bot:
 
 
 if __name__ == "__main__":
-    board = InverseTicTacToeBoard(width=5, height=5, losing_length=3)
+    board = InverseTicTacToeBoard(width=10, height=10, losing_length=5)
     bot = Bot(board, marker=PlayerMark.O)

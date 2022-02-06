@@ -83,7 +83,7 @@ def test_check_tie(board):
     assert board.get_result() is GameState.TIE
 
 
-def test_tie_when_two_bots_playing(board):
+def test_bot_doesnt_lose(board):
     bot1 = Bot(board, marker=PlayerMark.X)
     bot2 = Bot(board, marker=PlayerMark.O)
     for _ in range(50):
