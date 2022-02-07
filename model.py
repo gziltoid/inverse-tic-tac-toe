@@ -10,12 +10,12 @@ class PlayerMark(Enum):
 
 CellCoords = namedtuple("CellCoords", "row col")
 
-# FIXME not numeric ?
+
 class GameState(Enum):
-    IN_PROGRESS = 'Playing...'
-    X_WON = 'X has won!'
-    O_WON = 'O has won!'
-    TIE = 'TIE!'
+    IN_PROGRESS = 1
+    X_WON = 2
+    O_WON = 3
+    TIE = 4
 
 
 class InverseTicTacToeBoard:
@@ -114,7 +114,9 @@ class Bot:
         for row in range(self.__board.height):
             for col in range(self.__board.width):
                 cell = CellCoords(row, col)
-                if self.__board.is_cell_empty(cell) and not self.__board.will_lose(self.marker, cell):
+                if self.__board.is_cell_empty(cell) and not self.__board.will_lose(
+                    self.marker, cell
+                ):
                     self.__board.try_place_marker(self.marker, cell)
                     return cell
         # place a marker when empty cells are left but player will lose
