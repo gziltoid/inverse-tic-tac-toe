@@ -4,24 +4,27 @@ import os
 import pygame
 from model import PlayerMark, InverseTicTacToeBoard, Bot, CellCoords, GameState
 
-
+# board
 ROW_COUNT, COL_COUNT = 10, 10
 LOSING_LENGTH = 5
 
+# screen
 CELL_SIZE = 50
 CELL_MARGIN = 1
 SCREEN_WIDTH = CELL_SIZE * COL_COUNT + CELL_MARGIN * (COL_COUNT + 1)
 SCREEN_HEIGHT = CELL_SIZE * ROW_COUNT + CELL_MARGIN * (ROW_COUNT + 1)
 
+# font
 FONT_NAME = "arial"
 FONT_SIZE = SCREEN_WIDTH // 8
 FONT_COLOR = (226, 20, 27)
 
+# colors
+BG_COLOR = (230, 230, 230)
+GAME_OVER_BG_COLOR = (0, 0, 0)
 GRID_COLOR = (0, 0, 0)
 O_COLOR = (0, 150, 0)
 X_COLOR = (0, 0, 255)
-BG_COLOR = (230, 230, 230)
-GAME_OVER_BG_COLOR = (0, 0, 0)
 
 
 GAME_STATE_MESSAGES = {

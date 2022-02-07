@@ -1,7 +1,6 @@
 from enum import Enum
 from typing import Optional
 from typing import NamedTuple
-from typing import Optional
 
 
 class PlayerMark(Enum):
@@ -55,6 +54,7 @@ class InverseTicTacToeBoard:
         return any(None in row for row in self.__board)
 
     def try_place_marker(self, marker: PlayerMark, cell: CellCoords) -> bool:
+        ''' Tries to place a marker to an empty cell that won't lead to losing'''
         # game is already finished
         if self.__game_state is not GameState.IN_PROGRESS:
             return False
@@ -79,6 +79,7 @@ class InverseTicTacToeBoard:
     def __count_markers(
         self, marker: PlayerMark, starting_cell: CellCoords, delta: tuple[int, int]
     ) -> int:
+        '''Counts all markers of the same type one way from a starting cell.'''
         row, col = starting_cell.row, starting_cell.col
         count = 0
         dx, dy = delta
@@ -95,6 +96,7 @@ class InverseTicTacToeBoard:
     def __check_direction(
         self, marker: PlayerMark, starting_cell: CellCoords, delta: tuple[int, int]
     ) -> bool:
+        '''Checks the direction backward and forward from a starting cell.'''
         count = 1  # starting_cell is counted
         dx, dy = delta
         # check backward
@@ -104,6 +106,7 @@ class InverseTicTacToeBoard:
         return count >= self.__losing_length
 
     def will_lose(self, marker: PlayerMark, cell: CellCoords) -> bool:
+        '''Checks for all losing directions.'''
         return any(
             (
                 # check horizontally
@@ -127,6 +130,7 @@ class Bot:
         self.marker = marker
 
     def make_a_move(self) -> Optional[CellCoords]:
+        '''Tries to make a move on the first empty cell that won't lead to losing.'''
         for row in range(self.__board.row_count):
             for col in range(self.__board.col_count):
                 cell = CellCoords(row, col)
@@ -135,7 +139,7 @@ class Bot:
                 ):
                     self.__board.try_place_marker(self.marker, cell)
                     return cell
-        # place a marker when empty cells are left but player will lose
+        # place a marker in case when empty cells are left but player will lose
         for row in range(self.__board.row_count):
             for col in range(self.__board.col_count):
                 cell = CellCoords(row, col)
