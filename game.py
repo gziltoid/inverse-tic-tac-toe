@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
-import sys
 import os
+import sys
+
 import pygame
+
 from model import PlayerMark, InverseTicTacToeBoard, Bot, CellCoords, GameState
 
 # board
@@ -25,7 +27,6 @@ GAME_OVER_BG_COLOR = (0, 0, 0)
 GRID_COLOR = (0, 0, 0)
 O_COLOR = (0, 150, 0)
 X_COLOR = (0, 0, 255)
-
 
 GAME_STATE_MESSAGES = {
     GameState.X_WON: "X has won!",
@@ -63,9 +64,9 @@ class InverseTicTacToeGame:
                 elif event.type == pygame.MOUSEBUTTONDOWN and not self.__game_over:
                     self.__on_click()
                 elif (
-                    self.__game_over
-                    and event.type == pygame.KEYDOWN
-                    and event.key == pygame.K_SPACE
+                        self.__game_over
+                        and event.type == pygame.KEYDOWN
+                        and event.key == pygame.K_SPACE
                 ):
                     self.__start_new_game()
                     self.__draw_grid()
@@ -77,7 +78,8 @@ class InverseTicTacToeGame:
 
             pygame.display.flip()
 
-    def __get_cell_under_cursor(self):
+    @staticmethod
+    def __get_cell_under_cursor() -> CellCoords:
         x_m, y_m = pygame.mouse.get_pos()
         col = x_m // (CELL_MARGIN + CELL_SIZE)
         row = y_m // (CELL_MARGIN + CELL_SIZE)
@@ -87,6 +89,7 @@ class InverseTicTacToeGame:
         cell = self.__get_cell_under_cursor()
         if self.__board.try_place_marker(PlayerMark.X, cell):
             self.__draw_marker(PlayerMark.X, cell)
+            #  bot's turn
             if bot_move := self.__bot.make_a_move():
                 self.__draw_marker(PlayerMark.O, bot_move)
         if self.__board.get_result() is not GameState.IN_PROGRESS:

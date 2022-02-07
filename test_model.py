@@ -1,5 +1,6 @@
-from game import Bot, InverseTicTacToeBoard, PlayerMark, CellCoords, GameState
 import pytest
+
+from game import Bot, InverseTicTacToeBoard, PlayerMark, CellCoords, GameState
 
 
 @pytest.fixture(autouse=True)
@@ -12,7 +13,7 @@ def test_params_boundary_values():
     with pytest.raises(ValueError):
         InverseTicTacToeBoard(col_count=0, row_count=10, losing_length=5)
     with pytest.raises(ValueError):
-        InverseTicTacToeBoard(col_count=0, row_count=0, losing_length=5)
+        InverseTicTacToeBoard(col_count=10, row_count=0, losing_length=5)
     with pytest.raises(ValueError):
         InverseTicTacToeBoard(col_count=10, row_count=10, losing_length=11)
 

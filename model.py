@@ -1,6 +1,6 @@
 from enum import Enum
-from typing import Optional
 from typing import NamedTuple
+from typing import Optional
 
 
 class PlayerMark(Enum):
@@ -23,10 +23,10 @@ class GameState(Enum):
 class InverseTicTacToeBoard:
     def __init__(self, row_count: int, col_count: int, losing_length: int):
         if row_count <= 0 or col_count <= 0:
-            raise ValueError("Width and row_count should be positive.")
+            raise ValueError("Number of rows and columns should be positive.")
         if losing_length <= 0 or losing_length > col_count or losing_length > row_count:
             raise ValueError(
-                "Losing length should be positive and less than col_count or row_count."
+                "Losing length should be positive and less than number of columns or number of rows."
             )
         self.__col_count = col_count
         self.__row_count = row_count
@@ -58,26 +58,24 @@ class InverseTicTacToeBoard:
         if self.__game_state is not GameState.IN_PROGRESS:
             return False
         # trying to place marker out of bounds
-        if not (0 <= cell.row < self.__row_count) or not (
-            0 <= cell.col < self.__col_count
-        ):
+        if not (0 <= cell.row < self.__row_count) or not (0 <= cell.col < self.__col_count):
             return False
         # cell is not empty
         if not self.is_cell_empty(cell):
             return False
-
         self.__board[cell.row][cell.col] = marker
+        self.__update_game_status(marker, cell)
+        return True
+
+    def __update_game_status(self, marker: PlayerMark, cell: CellCoords) -> None:
         if self.will_lose(marker, cell):
             self.__game_state = (
                 GameState.X_WON if marker == PlayerMark.O else GameState.O_WON
             )
         elif not self.__are_empty_cells_left():
             self.__game_state = GameState.TIE
-        return True
 
-    def __count_markers(
-        self, marker: PlayerMark, starting_cell: CellCoords, delta: tuple[int, int]
-    ) -> int:
+    def __count_markers(self, marker: PlayerMark, starting_cell: CellCoords, delta: tuple[int, int]) -> int:
         """Count all markers of the same type in one direction from a starting cell."""
         row, col = starting_cell.row, starting_cell.col
         count = 0
@@ -92,9 +90,7 @@ class InverseTicTacToeBoard:
             count += 1
         return count
 
-    def __check_direction(
-        self, marker: PlayerMark, starting_cell: CellCoords, delta: tuple[int, int]
-    ) -> bool:
+    def __check_direction(self, marker: PlayerMark, starting_cell: CellCoords, delta: tuple[int, int]) -> bool:
         """Check the direction and its inverse from a starting cell."""
         count = 1  # starting_cell is counted
         dx, dy = delta
@@ -124,7 +120,7 @@ class InverseTicTacToeBoard:
 
 
 class Bot:
-    def __init__(self, board: list[list[Optional[PlayerMark]]], marker: PlayerMark):
+    def __init__(self, board: InverseTicTacToeBoard, marker: PlayerMark):
         self.__board = board
         self.marker = marker
 
@@ -134,12 +130,10 @@ class Bot:
         for row in range(self.__board.row_count):
             for col in range(self.__board.col_count):
                 cell = CellCoords(row, col)
-                if self.__board.is_cell_empty(cell) and not self.__board.will_lose(
-                    self.marker, cell
-                ):
+                if self.__board.is_cell_empty(cell) and not self.__board.will_lose(self.marker, cell):
                     self.__board.try_place_marker(self.marker, cell)
                     return cell
-        # place a marker in case when empty cells are left but player will lose
+        # place a marker when all empty cells lead to defeat
         for row in range(self.__board.row_count):
             for col in range(self.__board.col_count):
                 cell = CellCoords(row, col)
