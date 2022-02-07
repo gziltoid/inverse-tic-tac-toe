@@ -81,8 +81,8 @@ def test_check_antidiagonal_losing(board):
 
 def test_check_tie(board):
     x, o = PlayerMark.X, PlayerMark.O
-    for row in range(board.width):
-        for col in range(board.height):
+    for row in range(board.col_count):
+        for col in range(board.row_count):
             if row % 2 == 0:
                 board.try_place_marker(
                     x if col % 4 in (0, 1) else o, CellCoords(row, col)

@@ -12,15 +12,17 @@ CELL_SIZE = 50
 CELL_MARGIN = 1
 SCREEN_WIDTH = CELL_SIZE * COL_COUNT + CELL_MARGIN * (COL_COUNT + 1)
 SCREEN_HEIGHT = CELL_SIZE * ROW_COUNT + CELL_MARGIN * (ROW_COUNT + 1)
+
 FONT_NAME = "arial"
 FONT_SIZE = SCREEN_WIDTH // 8
+FONT_COLOR = (226, 20, 27)
 
 GRID_COLOR = (0, 0, 0)
 O_COLOR = (0, 150, 0)
 X_COLOR = (0, 0, 255)
 BG_COLOR = (230, 230, 230)
 GAME_OVER_BG_COLOR = (0, 0, 0)
-FONT_COLOR = (226, 20, 27)
+
 
 GAME_STATE_MESSAGES = {
     GameState.X_WON: "X has won!",
@@ -32,7 +34,8 @@ GAME_STATE_MESSAGES = {
 class InverseTicTacToeGame:
     def __init__(self):
         pygame.init()
-        self.__screen = pygame.display.set_mode(size=(SCREEN_WIDTH, SCREEN_HEIGHT))
+        self.__screen = pygame.display.set_mode(
+            size=(SCREEN_WIDTH, SCREEN_HEIGHT))
         pygame.display.set_caption("Inverse Tic-Tac-Toe")
         icon_path = os.path.join(
             os.path.dirname(os.path.realpath(__file__)), "tic-tac-toe.png"
@@ -101,34 +104,34 @@ class InverseTicTacToeGame:
                 self.__screen, GRID_COLOR, (x, 0), (x, SCREEN_HEIGHT), width=CELL_MARGIN
             )
 
-    def __draw_marker(self, marker, pos):
-        x = pos.col * CELL_SIZE + (pos.col + 1) * CELL_MARGIN
-        y = pos.row * CELL_SIZE + (pos.row + 1) * CELL_MARGIN
+    def __draw_marker(self, marker: PlayerMark, cell: CellCoords):
+        coord_x = cell.col * CELL_SIZE + (cell.col + 1) * CELL_MARGIN
+        coord_y = cell.row * CELL_SIZE + (cell.row + 1) * CELL_MARGIN
         if marker == PlayerMark.X:
             pygame.draw.line(
                 self.__screen,
                 X_COLOR,
-                (x + 5, y + 5),
-                (x + CELL_SIZE - 5, y + CELL_SIZE - 5),
+                (coord_x + 5, coord_y + 5),
+                (coord_x + CELL_SIZE - 5, coord_y + CELL_SIZE - 5),
                 width=5,
             )
             pygame.draw.line(
                 self.__screen,
                 X_COLOR,
-                (x + CELL_SIZE - 5, y + 5),
-                (x + 5, y + CELL_SIZE - 5),
+                (coord_x + CELL_SIZE - 5, coord_y + 5),
+                (coord_x + 5, coord_y + CELL_SIZE - 5),
                 width=5,
             )
         else:
             pygame.draw.circle(
                 self.__screen,
                 O_COLOR,
-                (x + CELL_SIZE // 2, y + CELL_SIZE // 2),
+                (coord_x + CELL_SIZE // 2, coord_y + CELL_SIZE // 2),
                 radius=CELL_SIZE // 2 - 3,
                 width=3,
             )
 
-    def __show_end_of_game(self, message):
+    def __show_end_of_game(self, message: str):
         font = pygame.font.SysFont(FONT_NAME, FONT_SIZE)
         text = font.render(message, True, FONT_COLOR)
         text_x = (self.__screen.get_width() - text.get_width()) // 2
