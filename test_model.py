@@ -4,8 +4,17 @@ import pytest
 
 @pytest.fixture(autouse=True)
 def board():
-    board = InverseTicTacToeBoard(width=10, height=10, losing_length=5)
+    board = InverseTicTacToeBoard(col_count=10, row_count=10, losing_length=5)
     yield board
+
+
+def test_params_boundary_values():
+    with pytest.raises(ValueError):
+        InverseTicTacToeBoard(col_count=0, row_count=10, losing_length=5)
+    with pytest.raises(ValueError):
+        InverseTicTacToeBoard(col_count=0, row_count=0, losing_length=5)
+    with pytest.raises(ValueError):
+        InverseTicTacToeBoard(col_count=10, row_count=10, losing_length=11)
 
 
 def test_placing_markers(board):

@@ -18,21 +18,26 @@ class GameState(Enum):
 
 
 class InverseTicTacToeBoard:
-    def __init__(self, width, height, losing_length):
-        # FIXME check boundaries
-        self.__width = width
-        self.__height = height
+    def __init__(self, row_count, col_count, losing_length):
+        if row_count <= 0 or col_count <= 0:
+            raise ValueError("Width and height should be positive.")
+        if losing_length <= 0 or losing_length > col_count or losing_length > row_count:
+            raise ValueError(
+                "Losing length should be positive and less than width or height."
+            )
+        self.__col_count = col_count
+        self.__row_count = row_count
         self.__losing_length = losing_length
-        self.__board = [[None] * self.__width for _ in range(self.__height)]
+        self.__board = [[None] * self.__col_count for _ in range(self.__row_count)]
         self.__game_state = GameState.IN_PROGRESS
 
     @property
     def width(self):
-        return self.__width
+        return self.__col_count
 
     @property
     def height(self):
-        return self.__height
+        return self.__row_count
 
     @property
     def losing_length(self):
@@ -49,7 +54,9 @@ class InverseTicTacToeBoard:
         if self.__game_state is not GameState.IN_PROGRESS:
             return False
         # trying to place marker out of bounds
-        if not (0 <= pos.col < self.__width) or not (0 <= pos.row < self.__height):
+        if not (0 <= pos.row < self.__row_count) or not (
+            0 <= pos.col < self.__col_count
+        ):
             return False
         # cell is not empty
         if not self.is_cell_empty(pos):
@@ -70,7 +77,7 @@ class InverseTicTacToeBoard:
         while True:
             row += delta[0]
             col += delta[1]
-            if not (0 <= col < self.__width) or not (0 <= row < self.__height):
+            if not (0 <= row < self.__row_count) or not (0 <= col < self.__col_count):
                 break
             if self.__board[row][col] != marker:
                 break

@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import sys
 import os
-import random
 import pygame
 from model import PlayerMark, InverseTicTacToeBoard, Bot, CellCoords, GameState
 
@@ -34,8 +33,7 @@ GAME_STATE_MESSAGES = {
 class InverseTicTacToeGame:
     def __init__(self):
         pygame.init()
-        self.__screen = pygame.display.set_mode(
-            size=(SCREEN_WIDTH, SCREEN_HEIGHT))
+        self.__screen = pygame.display.set_mode(size=(SCREEN_WIDTH, SCREEN_HEIGHT))
         pygame.display.set_caption("Inverse Tic-Tac-Toe")
         icon_path = os.path.join(
             os.path.dirname(os.path.realpath(__file__)), "tic-tac-toe.png"
@@ -45,7 +43,7 @@ class InverseTicTacToeGame:
     def __start_new_game(self):
         self.__game_over = False
         self.__board = InverseTicTacToeBoard(
-            width=COL_COUNT, height=ROW_COUNT, losing_length=LOSING_LENGTH
+            col_count=COL_COUNT, row_count=ROW_COUNT, losing_length=LOSING_LENGTH
         )
         self.__bot = Bot(self.__board, marker=PlayerMark.O)
 
@@ -140,5 +138,8 @@ class InverseTicTacToeGame:
 
 
 if __name__ == "__main__":
-    game = InverseTicTacToeGame()
-    game.run()
+    try:
+        game = InverseTicTacToeGame()
+        game.run()
+    except Exception as e:
+        sys.stderr.write(f"Exception: {e}" + os.linesep)
