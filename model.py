@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 from collections import namedtuple
 from enum import Enum
 
@@ -127,8 +126,3 @@ class Bot:
                     self.__board.try_place_marker(self.marker, cell)
                     return cell
         return None
-
-
-if __name__ == "__main__":
-    board = InverseTicTacToeBoard(width=10, height=10, losing_length=5)
-    bot = Bot(board, marker=PlayerMark.O)
