@@ -31,8 +31,7 @@ class InverseTicTacToeBoard:
         self.__col_count = col_count
         self.__row_count = row_count
         self.__losing_length = losing_length
-        self.__board = [
-            [None] * self.__col_count for _ in range(self.__row_count)]
+        self.__board = [[None] * self.__col_count for _ in range(self.__row_count)]
         self.__game_state = GameState.IN_PROGRESS
 
     @property
@@ -54,7 +53,7 @@ class InverseTicTacToeBoard:
         return any(None in row for row in self.__board)
 
     def try_place_marker(self, marker: PlayerMark, cell: CellCoords) -> bool:
-        ''' Tries to place a marker to an empty cell that won't lead to losing'''
+        """Try to place a marker in a cell, returns False if the cell is not empty."""
         # game is already finished
         if self.__game_state is not GameState.IN_PROGRESS:
             return False
@@ -79,7 +78,7 @@ class InverseTicTacToeBoard:
     def __count_markers(
         self, marker: PlayerMark, starting_cell: CellCoords, delta: tuple[int, int]
     ) -> int:
-        '''Counts all markers of the same type one way from a starting cell.'''
+        """Count all markers of the same type in one direction from a starting cell."""
         row, col = starting_cell.row, starting_cell.col
         count = 0
         dx, dy = delta
@@ -96,17 +95,17 @@ class InverseTicTacToeBoard:
     def __check_direction(
         self, marker: PlayerMark, starting_cell: CellCoords, delta: tuple[int, int]
     ) -> bool:
-        '''Checks the direction backward and forward from a starting cell.'''
+        """Check the direction and its inverse from a starting cell."""
         count = 1  # starting_cell is counted
         dx, dy = delta
-        # check backward
+        # check the normal direction
         count += self.__count_markers(marker, starting_cell, delta=(dx, dy))
-        # check forward
+        # check the inverse direction
         count += self.__count_markers(marker, starting_cell, delta=(-dx, -dy))
         return count >= self.__losing_length
 
     def will_lose(self, marker: PlayerMark, cell: CellCoords) -> bool:
-        '''Checks for all losing directions.'''
+        """Check all directions for the losing conditions."""
         return any(
             (
                 # check horizontally
@@ -130,7 +129,8 @@ class Bot:
         self.marker = marker
 
     def make_a_move(self) -> Optional[CellCoords]:
-        '''Tries to make a move on the first empty cell that won't lead to losing.'''
+        """Try to make a move on the first empty cell that won't lead to losing.
+        If all cells would lead to defeat, pick the first of them."""
         for row in range(self.__board.row_count):
             for col in range(self.__board.col_count):
                 cell = CellCoords(row, col)

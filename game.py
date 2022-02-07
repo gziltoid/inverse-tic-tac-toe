@@ -37,8 +37,7 @@ GAME_STATE_MESSAGES = {
 class InverseTicTacToeGame:
     def __init__(self):
         pygame.init()
-        self.__screen = pygame.display.set_mode(
-            size=(SCREEN_WIDTH, SCREEN_HEIGHT))
+        self.__screen = pygame.display.set_mode(size=(SCREEN_WIDTH, SCREEN_HEIGHT))
         pygame.display.set_caption("Inverse Tic-Tac-Toe")
         icon_path = os.path.join(
             os.path.dirname(os.path.realpath(__file__)), "tic-tac-toe.png"
@@ -53,6 +52,7 @@ class InverseTicTacToeGame:
         self.__bot = Bot(self.__board, marker=PlayerMark.O)
 
     def run(self):
+        """Execute the main game loop."""
         self.__start_new_game()
         self.__draw_grid()
         while True:
